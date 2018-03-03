@@ -1,0 +1,11 @@
+name: ${project.name}
+version: ${project.buildversion}
+description: ${project.name}
+
+authors: [RiotSeb]
+website: github.com/RiotSeb
+
+main: de.riotseb.worldguardzones.Main
+
+commands:
+  find:
