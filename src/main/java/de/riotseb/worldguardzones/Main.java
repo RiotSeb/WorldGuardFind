@@ -1,11 +1,12 @@
 package de.riotseb.worldguardzones;
 
+import com.sk89q.worldguard.bukkit.WGBukkit;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import de.riotseb.worldguardzones.command.FindRegionCommand;
-import de.riotseb.worldguardzones.handler.CommandHandler;
+import de.riotseb.worldguardzones.listener.EntityListener;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -23,15 +24,19 @@ public class Main extends JavaPlugin {
 	@Getter
 	private static Main instance;
 
+	@Getter
+	private static WorldGuardPlugin worldGuard;
+
 	@Override
 	public void onEnable() {
 		this.getLogger().log(Level.FINE, "Enabling plugin");
 
-		Main.instance = this;
-		registerCommands();
-
-
 		this.saveResource("messages.yml", false);
+
+		Main.instance = this;
+		Main.worldGuard = WGBukkit.getPlugin();
+		registerCommands();
+		registerEvents();
 
 	}
 
@@ -41,13 +46,11 @@ public class Main extends JavaPlugin {
 	}
 
 	private void registerCommands() {
-		CommandHandler.registerCommand(new FindRegionCommand());
+		getCommand(COMMAND_FIND_REGIONS).setExecutor(new FindRegionCommand());
 	}
 
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		CommandHandler.onCommand(sender, command, label, args);
-		return true;
+	private void registerEvents() {
+		Bukkit.getPluginManager().registerEvents(new EntityListener(), this);
 	}
+
 }

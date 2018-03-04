@@ -1,4 +1,11 @@
 no perms: "&cYou do not have enough permissions to do this."
+usage: "Usage:"
+usage hover: "Click here"
 
-find enabled: "&bYou enabled region finding."
+find enabled: "&aYou enabled region finding."
 find disabled: "&cYou disabled region finding."
+
+no region found: "&cNo region found"
+
+# Placeholder %region% -> found region's name
+region found: "&aRegion found: &6%region%"

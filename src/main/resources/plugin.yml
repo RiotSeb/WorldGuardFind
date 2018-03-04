@@ -5,6 +5,8 @@ description: ${project.name}
 authors: [RiotSeb]
 website: github.com/RiotSeb
 
+depend: [WorldGuard]
+
 main: de.riotseb.worldguardzones.Main
 
 commands:
