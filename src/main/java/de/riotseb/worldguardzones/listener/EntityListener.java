@@ -3,8 +3,10 @@ package de.riotseb.worldguardzones.listener;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import de.riotseb.worldguardzones.Main;
-import de.riotseb.worldguardzones.command.FindRegionCommand;
 import de.riotseb.worldguardzones.handler.MessageKey;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,21 +19,17 @@ import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class EntityListener implements Listener {
-
-	private static List<UUID> findActivatedPlayers = FindRegionCommand.findActivatedPlayers;
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 
 		Player player = event.getPlayer();
-		UUID playerId = player.getUniqueId();
 
-		if (findActivatedPlayers.contains(playerId)) {
-			findActivatedPlayers.remove(playerId);
+		if (player.hasMetadata("find")) {
+			player.removeMetadata("find", Main.getInstance());
 		}
 
 	}
@@ -40,15 +38,6 @@ public class EntityListener implements Listener {
 	public void onInteract(PlayerInteractEvent event) {
 
 		Player player = event.getPlayer();
-		UUID playerId = player.getUniqueId();
-
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-			return;
-		}
-
-		if (!findActivatedPlayers.contains(playerId)) {
-			return;
-		}
 
 		if (event.getHand() != EquipmentSlot.HAND) {
 			return;
@@ -58,18 +47,33 @@ public class EntityListener implements Listener {
 			return;
 		}
 
+		if (player.hasMetadata("find")) {
+			onFind(event);
+		}
+
+	}
+
+	private void onFind(PlayerInteractEvent event) {
+
+		Player player = event.getPlayer();
+
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+
 		RegionManager regionManager = Main.getWorldGuard().getRegionManager(player.getWorld());
 		Set<ProtectedRegion> regions = regionManager.getApplicableRegions(event.getClickedBlock().getLocation()).getRegions();
 
 		event.setCancelled(true);
 
 		if (regions.isEmpty()) {
-			player.sendMessage(MessageKey.NO_REGION_FOUND.getMessage());
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(MessageKey.NO_REGION_FOUND.getMessage()));
 			return;
 		}
 
 		List<String> regionNames = regions.stream().map(ProtectedRegion::getId).collect(Collectors.toList());
-		player.sendMessage(MessageKey.REGION_FOUND.getReplacedMessage("%region%", String.join(ChatColor.GRAY + ", " + ChatColor.GOLD, regionNames)));
+		BaseComponent[] message = TextComponent.fromLegacyText(MessageKey.REGION_FOUND.getReplacedMessage("%region%", String.join(ChatColor.GRAY + ", " + ChatColor.GOLD, regionNames)));
+		player.spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
 
 	}
 

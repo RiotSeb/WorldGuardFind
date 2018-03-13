@@ -10,4 +10,5 @@ depend: [WorldGuard]
 main: de.riotseb.worldguardzones.Main
 
 commands:
-  find:
+  wgfind:
+    description: "Search for WorldGuardregions"

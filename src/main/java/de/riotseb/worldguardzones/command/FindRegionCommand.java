@@ -1,6 +1,5 @@
 package de.riotseb.worldguardzones.command;
 
-import com.google.common.collect.Lists;
 import de.riotseb.worldguardzones.Main;
 import de.riotseb.worldguardzones.handler.MessageHandler;
 import de.riotseb.worldguardzones.handler.MessageKey;
@@ -10,13 +9,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
-import java.util.UUID;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class FindRegionCommand implements CommandExecutor {
-
-	public static List<UUID> findActivatedPlayers = Lists.newArrayList();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -33,24 +28,29 @@ public class FindRegionCommand implements CommandExecutor {
 			return true;
 		}
 
-		if (args.length == 0) {
-
-			if (findActivatedPlayers.contains(player.getUniqueId())) {
-				findActivatedPlayers.remove(player.getUniqueId());
-				player.sendMessage(MessageKey.FIND_DISABLED.getMessage());
-			} else {
-
-				if (!player.getInventory().contains(Material.STICK)) {
-					player.getInventory().addItem(new ItemStack(Material.STICK));
-				}
-
-				findActivatedPlayers.add(player.getUniqueId());
-				player.sendMessage(MessageKey.FIND_ENABLED.getMessage());
-			}
-
+		if (args.length != 0) {
+			player.spigot().sendMessage(MessageHandler.getInstance().getUsageSyntax(label));
 			return true;
 		}
-		player.spigot().sendMessage(MessageHandler.getInstance().getUsageSyntax(label));
+
+		if (player.hasMetadata("find")) {
+
+			player.removeMetadata("find", Main.getInstance());
+			player.sendMessage(MessageKey.FIND_DISABLED.getMessage());
+
+		} else {
+
+			player.setMetadata("find", new FixedMetadataValue(Main.getInstance(), true));
+			player.sendMessage(MessageKey.FIND_ENABLED.getMessage());
+
+			if (!player.getInventory().contains(Material.STICK)) {
+				player.getInventory().addItem(new ItemStack(Material.STICK));
+			}
+
+		}
+
 		return true;
 	}
+
 }
+

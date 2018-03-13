@@ -15,7 +15,7 @@ public class Main extends JavaPlugin {
 
 	public static final String MESSAGE_FILE = "messages.yml";
 
-	public static final String COMMAND_FIND_REGIONS = "find";
+	public static final String COMMAND_FIND_REGIONS = "wgfind";
 
 	public static final String PERM_COMMAND_FIND_REGIONS = "worldguardzones.find";
 
@@ -31,7 +31,7 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		this.getLogger().log(Level.FINE, "Enabling plugin");
 
-		this.saveResource("messages.yml", false);
+		this.saveResource(MESSAGE_FILE, false);
 
 		Main.instance = this;
 		Main.worldGuard = WGBukkit.getPlugin();
