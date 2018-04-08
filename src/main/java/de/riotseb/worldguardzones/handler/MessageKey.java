@@ -19,8 +19,8 @@ public enum MessageKey {
 		return MessageHandler.getInstance().getMessage(key);
 	}
 
-	public String getReplacedMessage(String regex, String replacement) {
-		return MessageHandler.getInstance().getMessage(key).replaceAll(regex, replacement);
+	public String getReplacedMessage(String expression, String replacement) {
+		return MessageHandler.getInstance().getMessage(key).replace(expression, replacement);
 	}
 
 }
